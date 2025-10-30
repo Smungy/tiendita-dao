@@ -1,77 +1,125 @@
-const { getConnection } = require('../data/db');
+const { ProductosDAO } = require("../data/daos/ProductosDAO");
+const Producto = require("../models/Producto");
+
+const productosDAO = new ProductosDAO();
 
 // obtener todos los productos
 exports.getAllProductos = async (req, res) => {
   try {
-    const conn = await getConnection();
-    const [rows] = await conn.query('SELECT * FROM productos');
-    conn.release();
-    res.status(200).json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener los productos' });
+    const productos = await productosDAO.obtenerTodos();
+    res.json(productos);
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).json({ error: "No se pudieron encontrar los productos." });
   }
 };
 
-// obtener producto por ID
+// obtener producto por id
 exports.getProductoById = async (req, res) => {
+  const productoId = parseInt(req.params.id);
+
+  if (isNaN(productoId)) {
+    return res.status(400).json({ error: "El ID del producto no es válido." });
+  }
+
   try {
-    const conn = await getConnection();
-    const [rows] = await conn.query('SELECT * FROM productos WHERE id = ?', [req.params.id]);
-    conn.release();
-    if (rows.length === 0) return res.status(404).json({ message: 'Producto no encontrado' });
-    res.status(200).json(rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener el producto' });
+    const producto = await productosDAO.obtenerPorId(productoId);
+
+    if (!producto) {
+      return res.status(404).json({ error: "El producto no fue encontrado." });
+    }
+
+    res.json(producto);
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).json({ error: "No se pudo obtener el producto." });
   }
 };
 
-// agregar nuevo producto
+// agregar producto
 exports.addProducto = async (req, res) => {
   try {
-    const { nombre, precio, stock } = req.body;
-    const conn = await getConnection();
-    const [result] = await conn.query(
-      'INSERT INTO productos (nombre, precio, stock) VALUES (?, ?, ?)',
-      [nombre, precio, stock]
+    const { nombre, precio, stock, alerta_stock, proveedor_id, proveedor_nombre } = req.body;
+
+    const nuevoProducto = new Producto(
+      null,
+      nombre,
+      precio,
+      stock,
+      alerta_stock,
+      proveedor_id,
+      proveedor_nombre
     );
-    conn.release();
-    res.status(201).json({ id: result.insertId, nombre, precio, stock });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al agregar el producto' });
+
+    const productoId = await productosDAO.crear(nuevoProducto);
+
+    res.status(201).json({
+      message: "Producto creado exitosamente.",
+      productoId: productoId,
+    });
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).json({ error: "No se pudo agregar el producto." });
   }
 };
 
 // actualizar producto
 exports.updateProducto = async (req, res) => {
+  const productoId = parseInt(req.params.id);
+
+  if (isNaN(productoId)) {
+    return res.status(400).json({ error: "El ID del producto no es válido." });
+  }
+
   try {
-    const { nombre, precio, stock } = req.body;
-    const conn = await getConnection();
-    const [result] = await conn.query(
-      'UPDATE productos SET nombre = ?, precio = ?, stock = ? WHERE id = ?',
-      [nombre, precio, stock, req.params.id]
+    const productoExistente = await productosDAO.obtenerPorId(productoId);
+
+    if (!productoExistente) {
+      return res.status(404).json({ error: "El producto no fue encontrado." });
+    }
+
+    const productoActualizado = new Producto(
+      productoId,
+      req.body.nombre || productoExistente.nombre,
+      req.body.precio || productoExistente.precio,
+      req.body.stock || productoExistente.stock,
+      req.body.alerta_stock || productoExistente.alerta_stock,
+      req.body.proveedor_id || productoExistente.proveedor_id,
+      req.body.proveedor_nombre || productoExistente.proveedor_nombre
     );
-    conn.release();
-    if (result.affectedRows === 0) return res.status(404).json({ message: 'Producto no encontrado' });
-    res.status(200).json({ message: 'Producto actualizado correctamente' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al actualizar el producto' });
+
+    await productosDAO.actualizar(productoId, productoActualizado);
+
+    res.json({
+      message: "Producto actualizado exitosamente.",
+      producto: productoActualizado,
+    });
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).json({ error: "No se pudo actualizar el producto." });
   }
 };
 
 // eliminar producto
 exports.deleteProducto = async (req, res) => {
+  const productoId = parseInt(req.params.id);
+
+  if (isNaN(productoId)) {
+    return res.status(400).json({ error: "El ID del producto no es válido." });
+  }
+
   try {
-    const conn = await getConnection();
-    const [result] = await conn.query('DELETE FROM productos WHERE id = ?', [req.params.id]);
-    conn.release();
-    if (result.affectedRows === 0) return res.status(404).json({ message: 'Producto no encontrado' });
+    const productoExistente = await productosDAO.obtenerPorId(productoId);
+
+    if (!productoExistente) {
+      return res.status(404).json({ error: "El producto no fue encontrado." });
+    }
+
+    await productosDAO.eliminar(productoId);
+
     res.status(204).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al eliminar el producto' });
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).json({ error: "No se pudo eliminar el producto." });
   }
 };

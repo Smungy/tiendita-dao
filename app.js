@@ -18,9 +18,9 @@ app.use("/api/v1/protected", protectedRoutes);
 const proveedoresRoutes = require("./routes/proveedoresRoutes");
 app.use("/api/v1/proveedores", proveedoresRoutes);
 
-// Agregar rutas de productos aquí
-// const productosRoutes = require("./routes/productosRoutes");
-// app.use("/api/v1/productos", productosRoutes);
+// rutas de productos aquí
+const productosRoutes = require('./routes/productosRoutes');
+app.use('/api/v1/productos', productosRoutes);
 
 // Agregar rutas de clientes aquí
 // const clientesRoutes = require("./routes/clientesRoutes");

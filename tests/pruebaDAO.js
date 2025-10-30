@@ -1,13 +1,13 @@
 // para probar las operaciones crud
-const { ProveedoresDAO } = require("../dao/ProveedoresDAO");
-const { ProductosDAO } = require("../dao/ProductosDAO");
-const { ClientesDAO } = require("../dao/ClientesDAO");
-const { VentasDAO } = require("../dao/VentasDAO");
-const { DetallesVentaDAO } = require("../dao/DetallesVentaDAO");
+const { ProveedoresDAO } = require("../data/daos/ProveedoresDAO");
+const { ProductosDAO } = require("../data/daos/ProductosDAO");
+const { ClientesDAO } = require("../data/daos/ClientesDAO");
+const { VentasDAO } = require("../data/daos/VentasDAO");
+const { DetallesVentaDAO } = require("../data/daos/DetallesVentaDAO");
 const {
   HistorialVentasClienteDAO,
-} = require("../dao/HistorialVentasClienteDAO");
-const { closePool } = require("../config/db");
+} = require("../data/daos/HistorialVentasClienteDAO");
+const { closePool } = require("../data/db");
 
 const Proveedor = require("../models/Proveedor");
 const Producto = require("../models/Producto");

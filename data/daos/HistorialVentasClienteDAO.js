@@ -1,6 +1,6 @@
 // dao para historial ventas cliente
-const { getConnection } = require("../config/db");
-const HistorialVentaCliente = require("../models/HistorialVentaCliente");
+const { getConnection } = require("../db");
+const HistorialVentaCliente = require("../../models/HistorialVentaCliente");
 
 class HistorialVentasClienteDAO {
   // crear registro en historial

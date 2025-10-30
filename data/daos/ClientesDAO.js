@@ -1,6 +1,6 @@
 // dao para clientes
-const { getConnection } = require("../config/db");
-const Cliente = require("../models/Cliente");
+const { getConnection } = require("../db");
+const Cliente = require("../../models/Cliente");
 
 class ClientesDAO {
   // crear cliente

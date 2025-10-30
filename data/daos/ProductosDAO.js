@@ -1,6 +1,6 @@
 // dao para productos
-const { getConnection } = require("../config/db");
-const Producto = require("../models/Producto");
+const { getConnection } = require("../db");
+const Producto = require("../../models/Producto");
 
 class ProductosDAO {
   // crear producto

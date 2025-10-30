@@ -1,6 +1,6 @@
 // dao para proveedores
-const { getConnection } = require("../config/db");
-const Proveedor = require("../models/Proveedor");
+const { getConnection } = require("../db");
+const Proveedor = require("../../models/Proveedor");
 
 class ProveedoresDAO {
   // crear proveedor

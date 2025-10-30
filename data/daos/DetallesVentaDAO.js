@@ -1,6 +1,6 @@
 // dao para detallesventa
-const { getConnection } = require("../config/db");
-const DetalleVenta = require("../models/DetalleVenta");
+const { getConnection } = require("../db");
+const DetalleVenta = require("../../models/DetalleVenta");
 
 class DetallesVentaDAO {
   // crear detalle venta

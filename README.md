@@ -1,11 +1,15 @@
-# Tiendita DAO - Instrucciones de Instalación
+# Tiendita DAO - API RESTful
+
+API RESTful para gestión de tienda con autenticación JWT y operaciones CRUD completas.
 
 ## Requisitos Previos
 
-- Node.js instalado (versión 14 o superior)
+- Node.js (versión 14 o superior)
+- npm o yarn
 - Acceso a la base de datos MySQL en Railway
+- Postman (para pruebas de endpoints)
 
-## Pasos para ejecutar el proyecto
+## Instalación
 
 ### 1. Clonar el repositorio
 
@@ -20,73 +24,81 @@ cd tiendita-dao
 npm install
 ```
 
-### 3. Configurar la conexión a la base de datos
+### 3. Configurar variables de entorno
 
-Copia el archivo `.env.example` y renómbralo como `.env`:
-
-```bash
-cp .env.example .env
-```
-
-Abre el archivo `.env` y completa con los datos de conexión de Railway:
+Crea un archivo `.env` en la raíz del proyecto:
 
 ```env
+# Base de datos MySQL
 DB_HOST=tu_host_de_railway.proxy.rlwy.net
 DB_USER=tu_usuario
 DB_PASSWORD=tu_contraseña
-DB_DATABASE=tu_dbname
+DB_DATABASE=railway
 DB_PORT=tu_puerto
+
+# JWT
+JWT_SECRET=tu_secreto_super_seguro_aqui
+
+# Servidor
+PORT=3000
 ```
 
-> **Nota:** Solicita las credenciales de acceso a la base de datos. Los datos de conexión se encuentran en el panel de Railway.
+> **Nota:** Solicita las credenciales de Railway al equipo. El `JWT_SECRET` puede ser cualquier string largo y aleatorio.
 
-### 4. Ejecutar el script de pruebas
+### 4. Iniciar el servidor
 
 ```bash
-node tests/pruebaDAO.js
+node app.js
 ```
 
-El script ejecutará:
+El servidor estará disponible en `http://localhost:3000`
 
-- Creación de registros (Proveedores, Productos, Clientes, Ventas)
-- Consulta de datos
-- Actualización de registros
-- Historial de ventas por cliente
-- Opción para eliminar los datos de prueba (te preguntará al final)
+## Estructura del Proyecto
 
-## Notas
-
-- La base de datos debe estar creada previamente (Solicita las credenciales de acceso a la base de datos.)
-- Si no quieres conectarte a la db en el servidor, crea la tuya con el scirpt que se te prorciono
-- Si tienes problemas de conexión, verifica que el puerto y las credenciales sean correctas
-- El script usa `readline-sync` para interactuar con la consola al final para pruebas de eliminacion
+```
+tiendita-dao/
+├── controllers/          # Lógica de negocio HTTP
+│   ├── authController.js
+│   └── proveedoresController.js
+├── routes/              # Definición de endpoints
+│   ├── authRoutes.js
+│   └── proveedoresRoutes.js
+├── middlewares/         # Middleware de Express
+│   ├── authMiddleware.js
+│   ├── errorHandler.js
+│   └── validators/
+├── data/
+│   └── daos/           # Acceso a base de datos
+├── models/             # Entidades del negocio
+├── app.js              # Punto de entrada
+└── .env                # Configuración (NO subir a git)
+```
 
 ## Solución de Problemas
 
 ### Error: "connect ETIMEDOUT"
 
-- Verifica que los datos en `.env` sean correctos
-- Asegúrate de tener acceso a internet
-- Comprueba que Railway no esté en mantenimiento
+- Verifica las credenciales en `.env`
+- Revisa tu conexión a internet
+- Confirma que Railway esté activo
 
-### Error: "ER_BAD_DB_ERROR"
+### Error: "jwt must be provided"
 
-- La base de datos `tiendita` no existe en Railway
-- Ejecuta el script SQL para crear las tablas primero
+- Incluye el header `Authorization: Bearer <token>`
+- Verifica que el token no haya expirado (24h)
 
-## Comandos útiles
+### Error: "Validation failed"
+
+- Revisa que todos los campos requeridos estén presentes
+
+## Iniciar el servidor
 
 ```bash
-# instalar dependencias
-npm install
-
-# ejecutar pruebas
-node tests/pruebaDAO.js
-
-# ver el código principal
-node index.js
+node app.js
 ```
+
+El servidor estará corriendo en `http://localhost:3000`
 
 ---
 
-¿Problemas? Consulta el script SQL incluido para crear las tablas o contacta al equipo.
+Para el flujo de trabajo con Git, consulta [WORKFLOW.md](./WORKFLOW.md).

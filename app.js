@@ -27,8 +27,8 @@ app.use('/api/v1/productos', productosRoutes);
 // app.use("/api/v1/clientes", clientesRoutes);
 
 // Agregar rutas de ventas aquí
-// const ventasRoutes = require("./routes/ventasRoutes");
-// app.use("/api/v1/ventas", ventasRoutes);
+const ventasRoutes = require("./routes/ventasRoutes");
+app.use("/api/v1/ventas", ventasRoutes);
 
 // middleware de manejo de errores
 const errorHandler = require("./middlewares/errorHandler");

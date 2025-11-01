@@ -23,8 +23,8 @@ const productosRoutes = require('./routes/productosRoutes');
 app.use('/api/v1/productos', productosRoutes);
 
 // Agregar rutas de clientes aquí
-// const clientesRoutes = require("./routes/clientesRoutes");
-// app.use("/api/v1/clientes", clientesRoutes);
+const clientesRoutes = require("./routes/clientesRoutes");
+app.use("/api/v1/clientes", clientesRoutes);
 
 // Agregar rutas de ventas aquí
 const ventasRoutes = require("./routes/ventasRoutes");

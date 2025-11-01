@@ -1,5 +1,5 @@
 const { ClientesDAO } = require("../data/daos/ClientesDAO");
-const Clientes = require("../models/Cliente");
+const Cliente = require("../models/Cliente");
 
 const clientesDAO = new ClientesDAO();
 
@@ -41,12 +41,12 @@ exports.getClienteById = async (req, res) => {
 // agregar cliente
 exports.addCliente = async (req, res) => {
   try {
-    const nuevoCliente = new Clientes(
+    const nuevoCliente = new Cliente(
       null,
-      req.body.id,
-      req.body.nombre,
-      req.body.telefono
-    );
+     req.body.nombre, 
+     req.body.telefono 
+);
+    
       
 
     const clienteId = await clientesDAO.crear(nuevoCliente);
@@ -76,7 +76,7 @@ exports.updateCliente = async (req, res) => {
       return res.status(404).json({ error: "El cliente no fue encontrado." });
     }
 
-    const clienteActualizado = new Clientes(
+    const clienteActualizado = new Cliente(
       clienteId,
       req.body.nombre || clienteExistente.nombre,
       req.body.telefono || clienteExistente.telefono

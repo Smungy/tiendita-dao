@@ -1,8 +1,17 @@
 const dotEnv = require("dotenv");
 const express = require("express");
+const cors = require("cors");
 const app = express();
 
 dotEnv.config();
+
+// Configuración de CORS para permitir el frontend
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Puerto de Vite por defecto
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
@@ -19,8 +28,8 @@ const proveedoresRoutes = require("./routes/proveedoresRoutes");
 app.use("/api/v1/proveedores", proveedoresRoutes);
 
 // rutas de productos aquí
-const productosRoutes = require('./routes/productosRoutes');
-app.use('/api/v1/productos', productosRoutes);
+const productosRoutes = require("./routes/productosRoutes");
+app.use("/api/v1/productos", productosRoutes);
 
 // Agregar rutas de clientes aquí
 const clientesRoutes = require("./routes/clientesRoutes");

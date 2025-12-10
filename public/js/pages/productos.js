@@ -17,7 +17,8 @@ function renderProductos() {
         Notification.requestPermission();
     }
 
-    document.getElementById("btnNuevo").addEventListener("click", () => mostrarFormulario());
+    
+    document.getElementById("btnNuevo").addEventListener("click", () => mostrarFormularioProducto());
 }
 
 async function cargarProductos() {
@@ -29,7 +30,6 @@ async function cargarProductos() {
         const lista = container.querySelector("productos-list");
         lista.productos = productos;
 
-        
         verificarStockBajo(productos);
 
         
@@ -41,12 +41,9 @@ async function cargarProductos() {
     }
 }
 
-
 function verificarStockBajo(productos) {
     if (Notification.permission === "granted") {
-        
         const bajos = productos.filter(p => parseInt(p.stock) <= parseInt(p.alerta_stock));
-        
         if (bajos.length > 0) {
             new Notification("Alerta de Inventario", {
                 body: `Tienes ${bajos.length} productos con stock bajo. ¡Revisa tu inventario!`,
@@ -56,7 +53,8 @@ function verificarStockBajo(productos) {
     }
 }
 
-function mostrarFormulario(producto = null) {
+
+function mostrarFormularioProducto(producto = null) {
     const modal = document.getElementById("main-modal");
     const container = document.createElement("div");
     container.innerHTML = "<producto-form></producto-form>";
@@ -64,7 +62,6 @@ function mostrarFormulario(producto = null) {
     const form = container.querySelector("producto-form");
     if (producto) form.producto = producto;
 
-    
     form.addEventListener("submit-producto", async (e) => {
         const { producto, isEdit } = e.detail;
         console.log("Datos a enviar:", producto); 
@@ -91,13 +88,13 @@ function mostrarFormulario(producto = null) {
 async function editarProducto(id) {
     try {
         const producto = await productosService.getById(id);
-        mostrarFormulario(producto);
+       
+        mostrarFormularioProducto(producto);
     } catch (error) {
         console.error(error);
         alert("No se pudo cargar el producto para editar.");
     }
 }
-
 
 async function eliminarProducto(id) {
     if(confirm("¿Seguro que deseas eliminar este producto?")) {
@@ -106,7 +103,7 @@ async function eliminarProducto(id) {
             cargarProductos(); 
         } catch (error) {
             console.error("Error al eliminar:", error);
-            alert("No se pudo eliminar el producto. Es posible que tenga ventas registradas (historial).");
+            alert("No se pudo eliminar el producto. Es posible que tenga ventas registradas.");
         }
     }
 }

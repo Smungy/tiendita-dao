@@ -3,20 +3,43 @@ class ProductoForm extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this._producto = null;
+        this._proveedores = []; 
     }
 
     set producto(value) {
         this._producto = value;
+       
+        if (this._proveedores.length > 0) this.render();
+    }
+
+    async connectedCallback() {
+        
+        await this.cargarProveedores();
         this.render();
     }
 
-    connectedCallback() {
-        this.render();
+    async cargarProveedores() {
+        try {
+           
+            if (window.proveedoresService) {
+                this._proveedores = await window.proveedoresService.getAll();
+            } else {
+                console.warn("Servicio de proveedores no disponible");
+            }
+        } catch (error) {
+            console.error("Error al cargar proveedores para el select:", error);
+        }
     }
 
     render() {
         const p = this._producto || {};
         const isEdit = !!this._producto;
+
+        
+        const opcionesProveedores = this._proveedores.map(prov => {
+            const selected = (p.proveedor_id === prov.id) ? 'selected' : '';
+            return `<option value="${prov.id}" ${selected}>${prov.nombre_empresa}</option>`;
+        }).join('');
 
         this.shadowRoot.innerHTML = `
             <style>
@@ -25,6 +48,7 @@ class ProductoForm extends HTMLElement {
                     flex-direction: column;
                     gap: 15px;
                     padding: 10px;
+                    font-family: system-ui, -apple-system, sans-serif;
                 }
                 
                 .form-group {
@@ -39,14 +63,15 @@ class ProductoForm extends HTMLElement {
                     color: #333;
                 }
 
-                input {
+                input, select {
                     padding: 10px;
                     border: 1px solid #ddd;
                     border-radius: 6px;
                     font-size: 1rem;
+                    background-color: white;
                 }
 
-                input:focus {
+                input:focus, select:focus {
                     outline: none;
                     border-color: #1a1a1a;
                 }
@@ -102,8 +127,11 @@ class ProductoForm extends HTMLElement {
                 </div>
                 
                 <div class="form-group">
-                    <label>ID Proveedor (Opcional)</label>
-                    <input type="number" name="proveedor_id" value="${p.proveedor_id || ''}" placeholder="Ej: 1">
+                    <label>Proveedor *</label>
+                    <select name="proveedor_id" required>
+                        <option value="">-- Selecciona un proveedor --</option>
+                        ${opcionesProveedores}
+                    </select>
                 </div>
 
                 <div class="form-actions">
@@ -122,21 +150,24 @@ class ProductoForm extends HTMLElement {
             const formData = new FormData(form);
             
             
+            const proveedorIdSeleccionado = parseInt(formData.get('proveedor_id'));
+            
+            
+            const proveedorObj = this._proveedores.find(prov => prov.id === proveedorIdSeleccionado);
+            const nombreProveedor = proveedorObj ? proveedorObj.nombre_empresa : "Proveedor General";
+
             const data = {
                 nombre: formData.get('nombre'),
                 precio: parseFloat(formData.get('precio')),
                 stock: parseInt(formData.get('stock')),
                 alerta_stock: parseInt(formData.get('alerta_stock')),
-                
-                proveedor_id: formData.get('proveedor_id') ? parseInt(formData.get('proveedor_id')) : null,
-               
-                proveedor_nombre: "Proveedor General" 
+                proveedor_id: proveedorIdSeleccionado,
+                proveedor_nombre: nombreProveedor
             };
 
             if (this._producto) {
                 data.id = this._producto.id;
             }
-            
             
             this.dispatchEvent(new CustomEvent('submit-producto', { 
                 detail: { 

@@ -40,6 +40,10 @@ class ModalComponent extends HTMLElement {
                     overflow-y: auto;
                     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
                 }
+                .modal.large {
+                    max-width: 900px;
+                    width: 95%;
+                }
                 .modal-header {
                     padding: 1.5rem;
                     border-bottom: 1px solid #eee;
@@ -86,9 +90,16 @@ class ModalComponent extends HTMLElement {
     });
   }
 
-  open(title, content) {
+  open(title, content, large = false) {
     this.shadowRoot.getElementById("modalTitle").textContent = title;
     const body = this.shadowRoot.getElementById("modalBody");
+    const modal = this.shadowRoot.querySelector(".modal");
+
+    if (large) {
+      modal.classList.add("large");
+    } else {
+      modal.classList.remove("large");
+    }
 
     if (typeof content === "string") {
       body.innerHTML = content;

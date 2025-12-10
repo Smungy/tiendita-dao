@@ -1,7 +1,9 @@
 const { VentasDAO } = require("../data/daos/VentasDAO");
+const { DetallesVentaDAO } = require("../data/daos/DetallesVentaDAO");
 const Venta = require("../models/Venta");
 
 const ventasDAO = new VentasDAO();
+const detallesVentaDAO = new DetallesVentaDAO();
 
 // obtener todas las ventas
 exports.getAllVentas = async (req, res) => {
@@ -116,5 +118,22 @@ exports.deleteVenta = async (req, res) => {
   } catch (err) {
     console.error(err.stack);
     res.status(500).json({ error: "No se pudo eliminar la venta." }); 
+  }
+};
+
+// obtener detalles de venta por venta_id
+exports.getDetallesVenta = async (req, res) => {
+  const ventaId = parseInt(req.params.id);
+
+  if (isNaN(ventaId)) {
+    return res.status(400).json({ error: "El ID de la venta no es válido." }); 
+  }
+
+  try {
+    const detalles = await detallesVentaDAO.obtenerPorVentaId(ventaId);
+    res.json(detalles); 
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).json({ error: "No se pudieron obtener los detalles de la venta." }); 
   }
 };

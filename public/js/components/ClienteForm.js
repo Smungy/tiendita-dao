@@ -18,7 +18,7 @@ class ClienteForm extends HTMLElement {
   }
 
   render() {
-    const p = this._cliente || {};
+    const c = this._cliente || {};
 
     this.shadowRoot.innerHTML = `
             <style>
@@ -40,19 +40,15 @@ class ClienteForm extends HTMLElement {
                     color: #333;
                     font-size: 0.9rem;
                 }
-                input, textarea {
+                input {
                     padding: 0.75rem;
                     border: 2px solid #e0e0e0;
                     border-radius: 8px;
                     font-size: 1rem;
                 }
-                input:focus, textarea:focus {
+                input:focus {
                     outline: none;
                     border-color: #1a1a1a;
-                }
-                textarea {
-                    resize: vertical;
-                    min-height: 80px;
                 }
                 .form-actions {
                     display: flex;
@@ -78,14 +74,14 @@ class ClienteForm extends HTMLElement {
                 }
             </style>
 
-            <form id="proveedorForm">
+            <form id="clienteForm">
                 <div class="form-group">
-                    <label for="nombre_empresa">Nombre de la Empresa *</label>
+                    <label for="nombre">Nombre *</label>
                     <input 
                         type="text" 
-                        id="nombre_empresa" 
-                        name="nombre_empresa"
-                        value="${p.nombre_empresa || ""}"
+                        id="nombre" 
+                        name="nombre"
+                        value="${c.nombre || ""}"
                         required 
                         minlength="3"
                         maxlength="100"
@@ -93,40 +89,16 @@ class ClienteForm extends HTMLElement {
                 </div>
 
                 <div class="form-group">
-                    <label for="contacto_nombre">Nombre del Contacto *</label>
-                    <input 
-                        type="text" 
-                        id="contacto_nombre" 
-                        name="contacto_nombre"
-                        value="${p.contacto_nombre || ""}"
-                        required 
-                        minlength="3"
-                        maxlength="100"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="telefono">Telefono *</label>
+                    <label for="telefono">Teléfono * (10 dígitos)</label>
                     <input 
                         type="tel" 
                         id="telefono" 
                         name="telefono"
-                        value="${p.telefono || ""}"
+                        value="${c.telefono || ""}"
                         required 
                         pattern="[0-9]{10}"
                         maxlength="10"
                     >
-                </div>
-
-                <div class="form-group">
-                    <label for="direccion">Direccion *</label>
-                    <textarea 
-                        id="direccion" 
-                        name="direccion"
-                        required 
-                        minlength="5"
-                        maxlength="200"
-                    >${p.direccion || ""}</textarea>
                 </div>
 
                 <div class="form-actions">
@@ -142,21 +114,16 @@ class ClienteForm extends HTMLElement {
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-
       const formData = new FormData(form);
       const cliente = {
-        nombre_empresa: formData.get("nombre_empresa"),
-        contacto_nombre: formData.get("contacto_nombre"),
+        nombre: formData.get("nombre"),
         telefono: formData.get("telefono"),
-        direccion: formData.get("direccion"),
       };
-
       if (this._isEdit) {
         cliente.id = this._cliente.id;
       }
-
       this.dispatchEvent(
-        new CustomEvent("submit-proveedor", {
+        new CustomEvent("submit-cliente", {
           detail: { cliente, isEdit: this._isEdit },
         })
       );

@@ -1,3 +1,4 @@
+// pagina de clientes con CRUD completo
 function renderClientes() {
   const app = document.getElementById("app");
 
@@ -5,10 +6,10 @@ function renderClientes() {
         <div class="page-container">
             <div class="page-header">
                 <h1>Clientes</h1>
-                <button class="btn btn-primary" id="btnNuevo">+ Nuevo Cliente</button>
+                <button class="btn btn-primary" id="btnNuevoCliente">+ Nuevo Cliente</button>
             </div>
             
-            <div id="alertContainer"></div>
+            <div id="alertContainerClientes"></div>
             <div id="clientesContainer">
                 <div class="loading">Cargando clientes...</div>
             </div>
@@ -17,8 +18,8 @@ function renderClientes() {
 
   cargarClientes();
 
-  document.getElementById("btnNuevo").addEventListener("click", () => {
-    mostrarFormulario();
+  document.getElementById("btnNuevoCliente").addEventListener("click", () => {
+    mostrarFormularioCliente();
   });
 }
 
@@ -32,7 +33,7 @@ async function cargarClientes() {
     const lista = container.querySelector("clientes-list");
     lista.clientes = clientes;
 
-    lista.addEventListener("edit-clientes", (e) => {
+    lista.addEventListener("edit-cliente", (e) => {
       editarCliente(e.detail.id);
     });
 
@@ -40,12 +41,12 @@ async function cargarClientes() {
       eliminarCliente(e.detail.id);
     });
   } catch (error) {
-    mostrarAlerta("Error al cargar clientes: " + error.message, "error");
+    mostrarAlertaCliente("Error al cargar clientes: " + error.message, "error");
     container.innerHTML = '<p class="error">Error al cargar datos</p>';
   }
 }
 
-function mostrarFormulario(cliente = null) {
+function mostrarFormularioCliente(cliente = null) {
   const modal = document.getElementById("main-modal");
   const titulo = cliente ? "Editar Cliente" : "Nuevo Cliente";
 
@@ -54,68 +55,78 @@ function mostrarFormulario(cliente = null) {
 
   modal.open(titulo, formContainer);
 
-  const form = formContainer.querySelector("cliente-form");
-  if (cliente) {
-    form.cliente = cliente;
-  }
+  // Pequeño delay para asegurar que el componente esté completamente cargado
+  setTimeout(() => {
+    const form = formContainer.querySelector("cliente-form");
+    if (form) {
+      if (cliente) {
+        form.cliente = cliente;
+      }
 
-  form.addEventListener("submit-cliente", async (e) => {
-    const { cliente: datos, isEdit } = e.detail;
-    await guardarCliente(datos, isEdit);
-    modal.close();
-  });
+      form.addEventListener("submit-cliente", async (e) => {
+        const { cliente: datos, isEdit } = e.detail;
+        await guardarCliente(datos, isEdit);
+        modal.close();
+      });
 
-  form.addEventListener("cancel-form", () => {
-    modal.close();
-  });
+      form.addEventListener("cancel-form", () => {
+        modal.close();
+      });
+    } else {
+      console.error("No se pudo cargar el componente cliente-form");
+      mostrarAlertaCliente("Error al cargar el formulario", "error");
+      modal.close();
+    }
+  }, 50);
 }
 
 async function guardarCliente(cliente, isEdit) {
   try {
     if (isEdit) {
       await clientesService.update(cliente.id, cliente);
-      mostrarAlerta("Cliente actualizado correctamente", "success");
+      mostrarAlertaCliente("Cliente actualizado correctamente", "success");
     } else {
       await clientesService.create(cliente);
-      mostrarAlerta("Cliente creado correctamente", "success");
+      mostrarAlertaCliente("Cliente creado correctamente", "success");
     }
     cargarClientes();
   } catch (error) {
-    mostrarAlerta("Error: " + error.message, "error");
+    mostrarAlertaCliente("Error: " + error.message, "error");
   }
 }
 
 async function editarCliente(id) {
   try {
     const cliente = await clientesService.getById(id);
-    mostrarFormulario(cliente);
+    mostrarFormularioCliente(cliente);
   } catch (error) {
-    mostrarAlerta("Error al cargar cliente: " + error.message, "error");
+    mostrarAlertaCliente("Error al cargar cliente: " + error.message, "error");
   }
 }
 
 async function eliminarCliente(id) {
-  if (!confirm("Estas seguro de eliminar este cliente?")) {
+  if (!confirm("¿Estás seguro de eliminar este cliente?")) {
     return;
   }
 
   try {
     await clientesService.delete(id);
-    mostrarAlerta(Cliente, eliminado, correctamente, "success");
+    mostrarAlertaCliente("Cliente eliminado correctamente", "success");
     cargarClientes();
-    } catch (error) {
-    mostrarAlerta("Error al eliminar: " + error.message, "error");
+  } catch (error) {
+    mostrarAlertaCliente("Error al eliminar: " + error.message, "error");
   }
 }
 
+function mostrarAlertaCliente(mensaje, tipo) {
+  const container = document.getElementById("alertContainerClientes");
+  if (container) {
+    container.innerHTML = `<div class="alert alert-${tipo}">${mensaje}</div>`;
 
-function mostrarAlerta(mensaje, tipo) {
-  const container = document.getElementById("alertContainer");
-  container.innerHTML = `<div class="alert alert-${tipo}">${mensaje}</div>`;
-
-  setTimeout(() => {
-    container.innerHTML = "";
-  }, 3000);
+    setTimeout(() => {
+      container.innerHTML = "";
+    }, 3000);
+  }
 }
 
 window.renderClientes = renderClientes;

@@ -25,9 +25,10 @@ class ClientesList extends HTMLElement {
       this._clientesFiltrados = this._clientes;
     } else {
       this._clientesFiltrados = this._clientes.filter(
-        (p) =>
-          p.id.toString().includes(this._filtro) ||
-          p.nombre_empresa.toLowerCase().includes(this._filtro)
+        (c) =>
+          c.id.toString().includes(this._filtro) ||
+          c.nombre.toLowerCase().includes(this._filtro) ||
+          c.telefono.includes(this._filtro)
       );
     }
     this.renderTabla();
@@ -64,7 +65,7 @@ class ClientesList extends HTMLElement {
                 table {
                     width: 100%;
                     border-collapse: collapse;
-                    min-width: 600px;
+                    min-width: 500px;
                 }
                 th, td {
                     padding: 1rem;
@@ -113,7 +114,7 @@ class ClientesList extends HTMLElement {
             </style>
 
             <div class="search-container">
-                <input type="text" class="search-input" placeholder="Buscar por ID o empresa..." value="${
+                <input type="text" class="search-input" placeholder="Buscar por nombre o teléfono..." value="${
                   this._filtro
                 }">
                 ${
@@ -131,26 +132,22 @@ class ClientesList extends HTMLElement {
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Empresa</th>
-                                <th>Contacto</th>
-                                <th>Telefono</th>
-                                <th>Direccion</th>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${this._clientesFiltrados
                               .map(
-                                (p) => `
+                                (c) => `
                                 <tr>
-                                    <td>${p.id}</td>
-                                    <td>${p.nombre_empresa}</td>
-                                    <td>${p.contacto_nombre}</td>
-                                    <td>${p.telefono}</td>
-                                    <td>${p.direccion}</td>
+                                    <td>${c.id}</td>
+                                    <td>${c.nombre}</td>
+                                    <td>${c.telefono}</td>
                                     <td class="actions">
-                                        <button class="btn btn-edit" data-id="${p.id}">Editar</button>
-                                        <button class="btn btn-delete" data-id="${p.id}">Eliminar</button>
+                                        <button class="btn btn-edit" data-id="${c.id}">Editar</button>
+                                        <button class="btn btn-delete" data-id="${c.id}">Eliminar</button>
                                     </td>
                                 </tr>
                             `
@@ -224,26 +221,22 @@ class ClientesList extends HTMLElement {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Empresa</th>
-              <th>Contacto</th>
-              <th>Telefono</th>
-              <th>Direccion</th>
+              <th>Nombre</th>
+              <th>Teléfono</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             ${this._clientesFiltrados
               .map(
-                (p) => `
+                (c) => `
               <tr>
-                <td>${p.id}</td>
-                <td>${p.nombre_empresa}</td>
-                <td>${p.contacto_nombre}</td>
-                <td>${p.telefono}</td>
-                <td>${p.direccion}</td>
+                <td>${c.id}</td>
+                <td>${c.nombre}</td>
+                <td>${c.telefono}</td>
                 <td class="actions">
-                  <button class="btn btn-edit" data-id="${p.id}">Editar</button>
-                  <button class="btn btn-delete" data-id="${p.id}">Eliminar</button>
+                  <button class="btn btn-edit" data-id="${c.id}">Editar</button>
+                  <button class="btn btn-delete" data-id="${c.id}">Eliminar</button>
                 </td>
               </tr>
             `

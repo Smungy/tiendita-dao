@@ -1,19 +1,14 @@
 const dotEnv = require("dotenv");
 const express = require("express");
-const cors = require("cors");
+const path = require("path");
 const app = express();
 
 dotEnv.config();
 
-// Configuración de CORS para permitir el frontend
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Puerto de Vite por defecto
-    credentials: true,
-  })
-);
-
 app.use(express.json());
+
+// Servir archivos estáticos del frontend (carpeta public)
+app.use(express.static(path.join(__dirname, "public")));
 
 // rutas de autenticación (login y register)
 const authRoutes = require("./routes/authRoutes");

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiendita - Sistema de Ventas</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <navbar-component></navbar-component>
+
+    <main id="app"></main>
+
+    <modal-component id="main-modal"></modal-component>
+
+    <!-- servicios -->
+    <script src="js/services/api.js"></script>
+    <script src="js/services/authService.js"></script>
+    <script src="js/services/proveedoresService.js"></script>
+    <script src="js/services/productosService.js"></script>
+    <script src="js/services/clientesService.js"></script>
+    <script src="js/services/ventasService.js"></script>
+
+    <!-- componentes -->
+    <script src="js/components/NavbarComponent.js"></script>
+    <script src="js/components/ModalComponent.js"></script>
+    <script src="js/components/ProveedoresList.js"></script>
+    <script src="js/components/ProveedorForm.js"></script>
+
+    <!-- paginas -->
+    <script src="js/pages/login.js"></script>
+    <script src="js/pages/register.js"></script>
+    <script src="js/pages/dashboard.js"></script>
+    <script src="js/pages/proveedores.js"></script>
+    <script src="js/pages/productos.js"></script>
+    <script src="js/pages/clientes.js"></script>
+    <script src="js/pages/ventas.js"></script>
+
+    <!-- router y app -->
+    <script src="js/router.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

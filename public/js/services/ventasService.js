@@ -19,6 +19,10 @@ const ventasService = {
   async delete(id) {
     return await api.delete(`/ventas/${id}`);
   },
+
+  async getDetalles(id) {
+    return await api.get(`/ventas/${id}/detalles`);
+  },
 };
 
 window.ventasService = ventasService;

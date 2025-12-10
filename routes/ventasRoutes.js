@@ -6,6 +6,7 @@ const { validateVenta } = require('../middlewares/validators/ventaValidator');
 
 
 router.get('/', verifyToken, ventasController.getAllVentas);
+router.get('/:id/detalles', verifyToken, ventasController.getDetallesVenta);
 router.get('/:id', verifyToken, ventasController.getVentaById);
 router.post('/', verifyToken, validateVenta, ventasController.addVenta); 
 router.put('/:id', verifyToken, validateVenta, ventasController.updateVenta); 

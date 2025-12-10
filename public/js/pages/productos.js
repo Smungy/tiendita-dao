@@ -13,7 +13,6 @@ function renderProductos() {
 
     cargarProductos();
     
-    
     if ("Notification" in window) {
         Notification.requestPermission();
     }
@@ -30,23 +29,26 @@ async function cargarProductos() {
         const lista = container.querySelector("productos-list");
         lista.productos = productos;
 
-        // Verificar stock bajo y notificar
+        
         verificarStockBajo(productos);
 
+        
         lista.addEventListener("edit-producto", (e) => editarProducto(e.detail.id));
         lista.addEventListener("delete-producto", (e) => eliminarProducto(e.detail.id));
     } catch (error) {
         console.error(error);
-        document.getElementById("productosContainer").innerHTML = "Error al cargar productos";
+        document.getElementById("productosContainer").innerHTML = "<p>Error al cargar productos.</p>";
     }
 }
 
-// Lógica de Notificaciones 
+
 function verificarStockBajo(productos) {
     if (Notification.permission === "granted") {
-        const bajos = productos.filter(p => p.stock <= p.alerta_stock);
+        
+        const bajos = productos.filter(p => parseInt(p.stock) <= parseInt(p.alerta_stock));
+        
         if (bajos.length > 0) {
-            new Notification(" Alerta de Inventario", {
+            new Notification("Alerta de Inventario", {
                 body: `Tienes ${bajos.length} productos con stock bajo. ¡Revisa tu inventario!`,
                 icon: "/vite.svg" 
             });
@@ -62,15 +64,22 @@ function mostrarFormulario(producto = null) {
     const form = container.querySelector("producto-form");
     if (producto) form.producto = producto;
 
+    
     form.addEventListener("submit-producto", async (e) => {
         const { producto, isEdit } = e.detail;
+        console.log("Datos a enviar:", producto); 
+
         try {
-            if (isEdit) await productosService.update(producto.id, producto);
-            else await productosService.create(producto);
+            if (isEdit) {
+                await productosService.update(producto.id, producto);
+            } else {
+                await productosService.create(producto);
+            }
             modal.close();
-            cargarProductos();
+            cargarProductos(); 
         } catch (error) {
-            alert("Error al guardar: " + error.message);
+            console.error("Error al guardar:", error);
+            alert("Error al guardar: " + (error.message || "Verifica los datos"));
         }
     });
 
@@ -80,14 +89,25 @@ function mostrarFormulario(producto = null) {
 }
 
 async function editarProducto(id) {
-    const producto = await productosService.getById(id);
-    mostrarFormulario(producto);
+    try {
+        const producto = await productosService.getById(id);
+        mostrarFormulario(producto);
+    } catch (error) {
+        console.error(error);
+        alert("No se pudo cargar el producto para editar.");
+    }
 }
+
 
 async function eliminarProducto(id) {
     if(confirm("¿Seguro que deseas eliminar este producto?")) {
-        await productosService.delete(id);
-        cargarProductos();
+        try {
+            await productosService.delete(id);
+            cargarProductos(); 
+        } catch (error) {
+            console.error("Error al eliminar:", error);
+            alert("No se pudo eliminar el producto. Es posible que tenga ventas registradas (historial).");
+        }
     }
 }
 

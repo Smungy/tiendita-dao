@@ -77,14 +77,15 @@ function mostrarFormulario(venta = null) {
 
 async function guardarVenta(venta, isEdit) {
   try {
-    // Nota: El backend actual solo acepta la venta básica
-    // Los detalles de venta se manejarían en una segunda llamada o endpoint adicional
+    console.log("Datos de venta a enviar:", venta);
     const ventaData = {
       fecha: venta.fecha,
       total: venta.total,
       metodo_pago: venta.metodo_pago,
       cliente_id: venta.cliente_id,
+      productos: venta.productos || [] // Incluir productos en la petición
     };
+    console.log("VentaData con productos:", ventaData);
 
     if (isEdit) {
       await ventasService.update(venta.id, ventaData);
@@ -92,11 +93,6 @@ async function guardarVenta(venta, isEdit) {
     } else {
       const resultado = await ventasService.create(ventaData);
       mostrarAlerta("Venta creada correctamente", "success");
-      
-      // TODO: Aquí se podrían crear los detalles de venta si hay un endpoint
-      // if (venta.productos && venta.productos.length > 0) {
-      //   await crearDetallesVenta(resultado.ventaId, venta.productos);
-      // }
     }
     cargarVentas();
   } catch (error) {
@@ -115,10 +111,18 @@ async function editarVenta(id) {
 
 async function verVenta(id) {
   try {
-    const [venta, detalles] = await Promise.all([
-      ventasService.getById(id),
-      ventasService.getDetalles(id).catch(() => []) // Si no hay detalles, retorna array vacío
-    ]);
+    const venta = await ventasService.getById(id);
+    let detalles = [];
+    
+    try {
+      detalles = await ventasService.getDetalles(id);
+    } catch (error) {
+      console.error("Error al obtener detalles:", error);
+      // Si el error es 404, puede que no haya detalles aún, continuamos con array vacío
+      if (error.message && !error.message.includes("404")) {
+        mostrarAlerta("Error al cargar detalles: " + error.message, "error");
+      }
+    }
     
     const modal = document.getElementById("main-modal");
     

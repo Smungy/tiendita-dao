@@ -6,13 +6,19 @@ async function renderDashboard() {
         <div class="page-container">
             <div class="page-header">
                 <h1>Dashboard</h1>
+                <button class="btn btn-primary" id="btnRefrescar">Actualizar</button>
             </div>
             
             <div id="dashboardContainer">
                 <div class="loading">Cargando estadísticas...</div>
             </div>
         </div>
-    `;
+`;
+
+  // Agregar listener al botón de refrescar
+  document.getElementById("btnRefrescar")?.addEventListener("click", () => {
+    cargarEstadisticas();
+  });
 
   await cargarEstadisticas();
 }
@@ -211,6 +217,12 @@ async function cargarEstadisticas() {
         <h3>Ventas Recientes</h3>
         ${ventas.length > 0
           ? ventas
+              .sort((a, b) => {
+                // Ordenar por fecha descendente (más recientes primero)
+                const fechaA = new Date(a.fecha);
+                const fechaB = new Date(b.fecha);
+                return fechaB - fechaA;
+              })
               .slice(0, 5)
               .map(
                 (v) => `
@@ -230,6 +242,13 @@ async function cargarEstadisticas() {
 
     // Crear gráficas después de renderizar el HTML
     setTimeout(() => {
+      // Destruir gráficas anteriores si existen
+      if (window.ventasBarrasChartInstance) {
+        window.ventasBarrasChartInstance.destroy();
+      }
+      if (window.metodosPagoChartInstance) {
+        window.metodosPagoChartInstance.destroy();
+      }
       crearGraficaBarras(ventas, estadisticas);
       crearGraficaPastel(ventas, estadisticas);
     }, 100);

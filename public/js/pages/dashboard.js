@@ -6,7 +6,7 @@ async function renderDashboard() {
         <div class="page-container">
             <div class="page-header">
                 <h1>Dashboard</h1>
-                <button class="btn btn-primary" id="btnRefrescar">🔄 Actualizar</button>
+                <button class="btn btn-primary" id="btnRefrescar">Actualizar</button>
             </div>
             
             <div id="dashboardContainer">
